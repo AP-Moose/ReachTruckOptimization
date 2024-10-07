@@ -7,10 +7,10 @@ def generate_warehouse_svg(warehouse_layout):
     svg = []
     aisle_positions = {}
     max_aisle = 63
-    aisle_width = 100
-    bay_height = 50
+    aisle_width = 40  # Reduced width to fit all aisles
+    bay_height = 30  # Reduced height for better fit
     svg_width = (max_aisle + 2) * aisle_width  # +2 for FW and BW
-    svg_height = 1200  # Increased height to accommodate more bays
+    svg_height = 1800  # Increased height to accommodate more bays
 
     # Calculate x-positions for all aisles
     for aisle in range(1, max_aisle + 1):
@@ -39,7 +39,11 @@ def generate_warehouse_svg(warehouse_layout):
             y = svg_height // 2  # Default position for unknown bays
 
         svg.append(f'<rect x="{x-aisle_width//2}" y="{y}" width="{aisle_width}" height="{bay_height}" class="bay" />')
-        svg.append(f'<text x="{x}" y="{y+bay_height//2}" text-anchor="middle" dominant-baseline="middle">{aisle},{bay}</text>')
+        svg.append(f'<text x="{x}" y="{y+bay_height//2}" text-anchor="middle" dominant-baseline="middle" font-size="8">{aisle},{bay}</text>')
+
+    # Add aisle labels at the top
+    for aisle, x in aisle_positions.items():
+        svg.append(f'<text x="{x}" y="10" text-anchor="middle" dominant-baseline="hanging" font-size="10" font-weight="bold">{aisle}</text>')
 
     return f'<svg width="{svg_width}" height="{svg_height}" viewBox="0 0 {svg_width} {svg_height}">' + ''.join(svg) + '</svg>'
 
@@ -47,10 +51,10 @@ def generate_path_svg(path, warehouse_layout):
     svg = []
     aisle_positions = {}
     max_aisle = 63
-    aisle_width = 100
-    bay_height = 50
+    aisle_width = 40  # Reduced width to fit all aisles
+    bay_height = 30  # Reduced height for better fit
     svg_width = (max_aisle + 2) * aisle_width  # +2 for FW and BW
-    svg_height = 1200
+    svg_height = 1800
 
     # Calculate x-positions for all aisles
     for aisle in range(1, max_aisle + 1):

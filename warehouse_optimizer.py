@@ -57,7 +57,13 @@ def calculate_travel_time(current_location: Tuple[str, str], next_location: Tupl
             bay_diff = 1  # Assuming moving to an endcap or non-numeric bay
         return bay_diff
     else:
-        return 5  # Moving between aisles
+        # Special handling for FW, BW, and non-integer aisles
+        if current_aisle in ['FW', 'BW'] or next_aisle in ['FW', 'BW']:
+            return 10  # Assuming it takes longer to move to/from FW or BW
+        elif '.' in current_aisle or '.' in next_aisle:
+            return 3  # Assuming it's quicker to move between half-aisles
+        else:
+            return 5  # Standard move between aisles
 
 def calculate_gate_cost(current_gates: Gate, required_gates_next: Dict[str, List]) -> int:
     cost = 0

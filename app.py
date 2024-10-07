@@ -12,9 +12,10 @@ def generate_warehouse_svg(warehouse_layout):
     svg_width = (max_aisle + 2) * aisle_width  # +2 for FW and BW
     svg_height = 2000  # Increased height to accommodate all bays
 
-    # Calculate x-positions for all aisles, including non-integer values
+    # Calculate x-positions for all aisles, including endcaps
     for aisle in range(1, max_aisle + 1):
         aisle_positions[str(aisle)] = aisle * aisle_width
+        # Endcap positions
         aisle_positions[f"{aisle}.5"] = (aisle * aisle_width) + (aisle_width // 2)
 
     # Special handling for FW and BW
@@ -30,9 +31,11 @@ def generate_warehouse_svg(warehouse_layout):
         else:
             y = svg_height // 2  # Default position for unknown bays
 
-        # Different colors for FW and BW
+        # Different colors for FW, BW, and endcaps
         if aisle in ['FW', 'BW']:
             fill_color = "#FFB3BA" if aisle == 'FW' else "#BAFFC9"
+        elif '.' in aisle:  # Endcap
+            fill_color = "#FFFFBA"
         else:
             fill_color = "#ffffff"
 
@@ -41,7 +44,8 @@ def generate_warehouse_svg(warehouse_layout):
 
     # Add aisle labels at the top
     for aisle, x in aisle_positions.items():
-        svg.append(f'<text x="{x}" y="5" text-anchor="middle" dominant-baseline="hanging" font-size="12" font-weight="bold">{aisle}</text>')
+        if '.' not in aisle:  # Don't show labels for endcaps
+            svg.append(f'<text x="{x}" y="5" text-anchor="middle" dominant-baseline="hanging" font-size="12" font-weight="bold">{aisle}</text>')
 
     return f'<svg width="{svg_width}" height="{svg_height}" viewBox="0 0 {svg_width} {svg_height}">' + ''.join(svg) + '</svg>'
 
@@ -54,7 +58,7 @@ def generate_path_svg(path, warehouse_layout):
     svg_width = (max_aisle + 2) * aisle_width  # +2 for FW and BW
     svg_height = 2000  # Matching the height in generate_warehouse_svg
 
-    # Calculate x-positions for all aisles, including non-integer values
+    # Calculate x-positions for all aisles, including endcaps
     for aisle in range(1, max_aisle + 1):
         aisle_positions[str(aisle)] = aisle * aisle_width
         aisle_positions[f"{aisle}.5"] = (aisle * aisle_width) + (aisle_width // 2)

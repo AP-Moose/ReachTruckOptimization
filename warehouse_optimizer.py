@@ -87,6 +87,13 @@ def heuristic(state: State) -> int:
 
     return min(calculate_travel_time(state.location, pallet) for pallet in state.remaining_pallets)
 
+def get_adjacent_aisles(aisle: str) -> List[str]:
+    if '.' in aisle:  # Endcap
+        base_aisle = int(float(aisle))
+        return [str(base_aisle), str(base_aisle + 1)]
+    else:
+        return [aisle]
+
 def a_star_search(pallet_list: List[Tuple[str, str]], warehouse_layout: Dict[Tuple[str, str], Dict[str, str]]):
     possible_start_locations = set(pallet_list)
     best_start_location = None
@@ -142,10 +149,14 @@ def a_star_search(pallet_list: List[Tuple[str, str]], warehouse_layout: Dict[Tup
                     'rolly_set': []
                 }
 
-                required_gates_next['built_in_close'].append(next_location[0])
+                # Handle endcaps and adjacent aisle blocking
+                current_aisles = get_adjacent_aisles(next_location[0])
+                for aisle in current_aisles:
+                    required_gates_next['built_in_close'].append(aisle)
 
                 if adjacent_blocked not in ['Wall', 'N/A']:
-                    required_gates_next['built_in_close'].append(adjacent_blocked)
+                    adjacent_aisles = get_adjacent_aisles(adjacent_blocked)
+                    required_gates_next['built_in_close'].extend(adjacent_aisles)
 
                 if requires_rolly == 'Yes':
                     required_gates_next['rolly_set'].append(next_location)

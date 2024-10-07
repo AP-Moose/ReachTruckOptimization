@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Warehouse Path Visualization</title>
+    <style>
+        svg {
+            border: 1px solid black;
+        }
+        .aisle {
+            fill: #f0f0f0;
+            stroke: #000;
+        }
+        .bay {
+            fill: #fff;
+            stroke: #000;
+        }
+        .path {
+            fill: none;
+            stroke: #ff0000;
+            stroke-width: 2;
+        }
+        .start {
+            fill: #00ff00;
+        }
+        .end {
+            fill: #0000ff;
+        }
+    </style>
+</head>
+<body>
+    <h1>Warehouse Path Visualization</h1>
+    <svg width="800" height="600" viewBox="0 0 800 600">
+        <!-- Warehouse layout will be inserted here -->
+        {{ warehouse_svg|safe }}
+        
+        <!-- Path will be inserted here -->
+        {{ path_svg|safe }}
+    </svg>
+    <h2>Path Details:</h2>
+    <ul>
+    {% for step in path %}
+        <li>
+            Move to {{ step['Move to'] }}, Travel Time: {{ step['Travel Time'] }} min, Gate Cost: {{ step['Gate Cost'] }} min
+            <ul>
+                <li>Gates Closed: {{ step['Gates Closed'] }}</li>
+                <li>Rolly Gates Set: {{ step['Rolly Gates Set'] }}</li>
+            </ul>
+        </li>
+    {% endfor %}
+    </ul>
+    <h3>Total Cost: {{ total_cost }} minutes</h3>
+    <a href="/">Back to input</a>
+</body>
+</html>

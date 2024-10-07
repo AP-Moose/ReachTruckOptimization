@@ -179,3 +179,30 @@ def a_star_search(pallet_list: List[Tuple[str, str]], warehouse_layout: Dict[Tup
         return best_start_location, best_path, min_total_cost
     else:
         return None, None, float('inf')
+
+if __name__ == "__main__":
+    warehouse_layout = load_warehouse_layout('warehouse_layout.csv')
+    pallet_list = [
+        ('1', '5'),
+        ('2', '7'),
+        ('3', 'EC2'),
+        ('FW', '1'),
+        ('BW', '3')
+    ]
+    start_location, path, total_cost = a_star_search(pallet_list, warehouse_layout)
+    
+    if path is not None:
+        print(f"Best Starting Location: {start_location}")
+        print("Optimal Path:")
+        for step in path:
+            move_to = step['Move to']
+            travel = step['Travel Time']
+            gate = step['Gate Cost']
+            gates_closed = step['Gates Closed']
+            rolly_set = step['Rolly Gates Set']
+            print(f"Move to {move_to}, Travel Time: {travel} min, Gate Cost: {gate} min")
+            print(f"  Gates Closed: {gates_closed}")
+            print(f"  Rolly Gates Set: {rolly_set}")
+        print(f"Total Cost: {total_cost} minutes")
+    else:
+        print("No valid path found.")

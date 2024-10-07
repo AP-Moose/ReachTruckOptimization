@@ -5,8 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Warehouse Path Visualization</title>
     <style>
-        svg {
+        .svg-container {
+            width: 100%;
+            height: 600px;
+            overflow: auto;
             border: 1px solid black;
+        }
+        svg {
+            display: block;
         }
         .aisle {
             fill: #f0f0f0;
@@ -18,26 +24,28 @@
         }
         .path {
             fill: none;
-            stroke: #ff0000;
-            stroke-width: 2;
+            stroke: #0000ff;
+            stroke-width: 3;
         }
         .start {
             fill: #00ff00;
         }
         .end {
-            fill: #0000ff;
+            fill: #ff0000;
         }
     </style>
 </head>
 <body>
     <h1>Warehouse Path Visualization</h1>
-    <svg width="800" height="600" viewBox="0 0 800 600">
-        <!-- Warehouse layout will be inserted here -->
-        {{ warehouse_svg|safe }}
-        
-        <!-- Path will be inserted here -->
-        {{ path_svg|safe }}
-    </svg>
+    <div class="svg-container">
+        <svg>
+            <!-- Warehouse layout will be inserted here -->
+            {{ warehouse_svg|safe }}
+            
+            <!-- Path will be inserted here -->
+            {{ path_svg|safe }}
+        </svg>
+    </div>
     <h2>Path Details:</h2>
     <ul>
     {% for step in path %}

@@ -7,43 +7,35 @@ def generate_warehouse_svg(warehouse_layout):
     svg = []
     aisle_positions = {}
     max_aisle = 63
-    aisle_width = 40  # Reduced width to fit all aisles
-    bay_height = 30  # Reduced height for better fit
+    aisle_width = 20  # Reduced width to fit all aisles
+    bay_height = 15  # Reduced height for better fit
     svg_width = (max_aisle + 2) * aisle_width  # +2 for FW and BW
-    svg_height = 1800  # Increased height to accommodate more bays
+    svg_height = 2000  # Increased height to accommodate more bays
 
-    # Calculate x-positions for all aisles
+    # Calculate x-positions for all aisles, including non-integer values
     for aisle in range(1, max_aisle + 1):
         aisle_positions[str(aisle)] = aisle * aisle_width
+        aisle_positions[f"{aisle}.5"] = (aisle * aisle_width) + (aisle_width // 2)
 
-    # Special handling for FW, BW, and non-integer aisles
+    # Special handling for FW and BW
     aisle_positions['FW'] = 0
     aisle_positions['BW'] = (max_aisle + 1) * aisle_width
-    
-    for (aisle, bay) in warehouse_layout.keys():
-        if '.' in aisle:
-            main_aisle = int(float(aisle))
-            aisle_positions[aisle] = main_aisle * aisle_width + aisle_width // 2
 
     for (aisle, bay), info in warehouse_layout.items():
         x = aisle_positions[aisle]
         if bay.isdigit():
             y = int(bay) * bay_height
-        elif bay == 'EC1':
-            y = 0
-        elif bay == 'EC2':
-            y = svg_height - bay_height
-        elif bay == 'EC3':
+        elif bay in ['EC1', 'EC2', 'EC3']:
             y = svg_height // 2
         else:
             y = svg_height // 2  # Default position for unknown bays
 
         svg.append(f'<rect x="{x-aisle_width//2}" y="{y}" width="{aisle_width}" height="{bay_height}" class="bay" />')
-        svg.append(f'<text x="{x}" y="{y+bay_height//2}" text-anchor="middle" dominant-baseline="middle" font-size="8">{aisle},{bay}</text>')
+        svg.append(f'<text x="{x}" y="{y+bay_height//2}" text-anchor="middle" dominant-baseline="middle" font-size="6">{aisle},{bay}</text>')
 
     # Add aisle labels at the top
     for aisle, x in aisle_positions.items():
-        svg.append(f'<text x="{x}" y="10" text-anchor="middle" dominant-baseline="hanging" font-size="10" font-weight="bold">{aisle}</text>')
+        svg.append(f'<text x="{x}" y="10" text-anchor="middle" dominant-baseline="hanging" font-size="8" font-weight="bold">{aisle}</text>')
 
     return f'<svg width="{svg_width}" height="{svg_height}" viewBox="0 0 {svg_width} {svg_height}">' + ''.join(svg) + '</svg>'
 
@@ -51,52 +43,40 @@ def generate_path_svg(path, warehouse_layout):
     svg = []
     aisle_positions = {}
     max_aisle = 63
-    aisle_width = 40  # Reduced width to fit all aisles
-    bay_height = 30  # Reduced height for better fit
+    aisle_width = 20  # Reduced width to fit all aisles
+    bay_height = 15  # Reduced height for better fit
     svg_width = (max_aisle + 2) * aisle_width  # +2 for FW and BW
-    svg_height = 1800
+    svg_height = 2000
 
-    # Calculate x-positions for all aisles
+    # Calculate x-positions for all aisles, including non-integer values
     for aisle in range(1, max_aisle + 1):
         aisle_positions[str(aisle)] = aisle * aisle_width
+        aisle_positions[f"{aisle}.5"] = (aisle * aisle_width) + (aisle_width // 2)
 
-    # Special handling for FW, BW, and non-integer aisles
+    # Special handling for FW and BW
     aisle_positions['FW'] = 0
     aisle_positions['BW'] = (max_aisle + 1) * aisle_width
-    
-    for (aisle, bay) in warehouse_layout.keys():
-        if '.' in aisle:
-            main_aisle = int(float(aisle))
-            aisle_positions[aisle] = main_aisle * aisle_width + aisle_width // 2
 
     for i, step in enumerate(path):
         aisle, bay = step['Move to']
         x = aisle_positions[aisle]
         if bay.isdigit():
             y = int(bay) * bay_height + bay_height // 2
-        elif bay == 'EC1':
-            y = bay_height // 2
-        elif bay == 'EC2':
-            y = svg_height - bay_height // 2
-        elif bay == 'EC3':
+        elif bay in ['EC1', 'EC2', 'EC3']:
             y = svg_height // 2
         else:
             y = svg_height // 2  # Default position for unknown bays
 
         if i == 0:
-            svg.append(f'<circle cx="{x}" cy="{y}" r="5" class="start" />')
+            svg.append(f'<circle cx="{x}" cy="{y}" r="3" class="start" />')
         elif i == len(path) - 1:
-            svg.append(f'<circle cx="{x}" cy="{y}" r="5" class="end" />')
+            svg.append(f'<circle cx="{x}" cy="{y}" r="3" class="end" />')
         if i > 0:
             prev_aisle, prev_bay = path[i-1]['Move to']
             prev_x = aisle_positions[prev_aisle]
             if prev_bay.isdigit():
                 prev_y = int(prev_bay) * bay_height + bay_height // 2
-            elif prev_bay == 'EC1':
-                prev_y = bay_height // 2
-            elif prev_bay == 'EC2':
-                prev_y = svg_height - bay_height // 2
-            elif prev_bay == 'EC3':
+            elif prev_bay in ['EC1', 'EC2', 'EC3']:
                 prev_y = svg_height // 2
             else:
                 prev_y = svg_height // 2  # Default position for unknown bays

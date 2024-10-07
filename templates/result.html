@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Optimization Result</title>
+</head>
+<body>
+    <h1>Optimization Result</h1>
+    <h2>Best Starting Location: {{ start_location }}</h2>
+    <h3>Optimal Path:</h3>
+    <ul>
+    {% for step in path %}
+        <li>
+            Move to {{ step['Move to'] }}, Travel Time: {{ step['Travel Time'] }} min, Gate Cost: {{ step['Gate Cost'] }} min
+            <ul>
+                <li>Gates Closed: {{ step['Gates Closed'] }}</li>
+                <li>Rolly Gates Set: {{ step['Rolly Gates Set'] }}</li>
+            </ul>
+        </li>
+    {% endfor %}
+    </ul>
+    <h3>Total Cost: {{ total_cost }} minutes</h3>
+    <a href="/">Back to input</a>
+</body>
+</html>

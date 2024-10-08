@@ -1,0 +1,29 @@
+# Python cache files
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+# Virtual environment
+venv/
+.env
+# IDE specific files
+*.swp
+*.swo
+*.idea/
+*.vscode/
+# Logs
+*.log
+# Database files
+*.sqlite3
+# Distribution / packaging
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+.eggs/
+egg-info/
+*.egg-info/
+# Other temporary files
+*.orig
+*.bak

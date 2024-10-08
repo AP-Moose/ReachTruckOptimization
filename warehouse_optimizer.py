@@ -107,7 +107,13 @@ def a_star_search(pallet_list: List[Tuple[str, str]], warehouse_layout: Dict[Tup
             remaining_pallets=set(pallet_list) - {start_location},
             gates=initial_gates,
             cost=0,
-            path=[]
+            path=[{
+                'Move to': start_location,
+                'Travel Time': 0,
+                'Gate Cost': 0,
+                'Gates Closed': [],
+                'Rolly Gates Set': []
+            }]
         )
 
         frontier = []

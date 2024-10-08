@@ -2,7 +2,6 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Warehouse Path Visualization</title>
     <style>
         .svg-container {
@@ -25,7 +24,7 @@
         .path {
             fill: none;
             stroke: #0000ff;
-            stroke-width: 3;
+            stroke-width: 2;
         }
         .start {
             fill: #00ff00;
@@ -33,24 +32,45 @@
         .end {
             fill: #ff0000;
         }
+        .path_point {
+            fill: #0000ff;
+        }
+        #toggle-details {
+            margin: 10px 0;
+            padding: 8px 12px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        #details-section {
+            border: 1px solid #ccc;
+            padding: 10px;
+            margin-top: 10px;
+        }
     </style>
 </head>
 <body>
     <h1>Warehouse Path Visualization</h1>
+    <h2>Optimal Starting Location: {{ start_location }}</h2>
     <div class="svg-container">
-        <svg>
-            <!-- Warehouse layout will be inserted here -->
-            {{ warehouse_svg|safe }}
-            
-            <!-- Path will be inserted here -->
-            {{ path_svg|safe }}
-        </svg>
+        <!-- Insert the SVG content directly -->
+        {{ combined_svg|safe }}
     </div>
     <h2>Path Details:</h2>
+<ol>
+{% for step in path %}
+    <li>
+        Aisle {{ step['Move to'][0] }} Bay {{ step['Move to'][1] }}
+    </li>
+{% endfor %}
+</ol>
+
+<button id="toggle-details">Show More Details</button>
+<div id="details-section" style="display: none;">
+    <h3>Detailed Information:</h3>
     <ul>
     {% for step in path %}
         <li>
-            Move to {{ step['Move to'] }}, Travel Time: {{ step['Travel Time'] }} min, Gate Cost: {{ step['Gate Cost'] }} min
+            Move to Aisle {{ step['Move to'][0] }} Bay {{ step['Move to'][1] }}, Travel Time: {{ step['Travel Time'] }} min, Gate Cost: {{ step['Gate Cost'] }} min
             <ul>
                 <li>Gates Closed: {{ step['Gates Closed'] }}</li>
                 <li>Rolly Gates Set: {{ step['Rolly Gates Set'] }}</li>
@@ -59,6 +79,21 @@
     {% endfor %}
     </ul>
     <h3>Total Cost: {{ total_cost }} minutes</h3>
-    <a href="/">Back to input</a>
+</div>
+<a href="/">Back to input</a>
+
+<script>
+    document.getElementById('toggle-details').addEventListener('click', function() {
+        var detailsSection = document.getElementById('details-section');
+        if (detailsSection.style.display === 'none') {
+            detailsSection.style.display = 'block';
+            this.textContent = 'Hide Details';
+        } else {
+            detailsSection.style.display = 'none';
+            this.textContent = 'Show More Details';
+        }
+    });
+</script>
+
 </body>
 </html>

@@ -24,6 +24,10 @@ downloads/
 .eggs/
 egg-info/
 *.egg-info/
-# Other temporary files
+# Other
 *.orig
 *.bak
+.replit
+Pasted-Table-of-Contents-Introduction-Updated-Problem-Description-Algorithm-Design-and-Implementation-Updat-1728337665475.txt
+replit.nix
+uv.lock

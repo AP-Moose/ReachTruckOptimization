@@ -29,7 +29,7 @@ Aisle	Bay	Requires Rolly Gate	Adjacent Aisle Blocked
 3	5	No	4
 3	7	No	4
 3	9	No	4
-3	11	Yes	4
+3	11	No	4
 3	13	Yes	4
 3	EC2	Yes	3.5
 3	2	Yes	2

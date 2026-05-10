@@ -2,6 +2,35 @@ from flask import Flask, render_template, request
 from warehouse_optimizer import load_warehouse_layout, a_star_search
 
 app = Flask(__name__)
+WAREHOUSE_LAYOUT = load_warehouse_layout('warehouse_layout.csv')
+
+
+def parse_pallet_list(raw_input):
+    tokens = raw_input.replace('\n', ' ').split()
+    pallet_list = []
+    errors = []
+
+    if not tokens:
+        return [], ["Enter at least one pallet location."]
+
+    for token in tokens:
+        parts = [part.strip() for part in token.split(',')]
+        if len(parts) != 2 or not parts[0] or not parts[1]:
+            errors.append(f"Use aisle,bay format for '{token}'.")
+            continue
+
+        location = (parts[0].upper() if parts[0].lower() in {'fw', 'bw'} else parts[0], parts[1].upper())
+        if location not in WAREHOUSE_LAYOUT:
+            errors.append(f"Aisle {location[0]}, Bay {location[1]} is not in the warehouse layout.")
+            continue
+
+        if location not in pallet_list:
+            pallet_list.append(location)
+
+    if not pallet_list and not errors:
+        errors.append("Enter at least one valid pallet location.")
+
+    return pallet_list, errors
 
 def generate_warehouse_svg(warehouse_layout):
     svg = []
@@ -130,12 +159,26 @@ def generate_path_svg(path, warehouse_layout):
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
-    if request.method == 'POST':
-        pallet_list_input = request.form.get('pallet_list').split()
-        pallet_list = [tuple(pallet.strip().split(',')) for pallet in pallet_list_input]
+    example_input = "1,5 2,7 3,EC2 44,12 45,13"
 
-        warehouse_layout = load_warehouse_layout('warehouse_layout.csv')
+    if request.method == 'POST':
+        pallet_list_raw = request.form.get('pallet_list', '').strip()
+        pallet_list, errors = parse_pallet_list(pallet_list_raw)
+
+        if errors:
+            return render_template('index.html',
+                                   error_messages=errors,
+                                   pallet_list=pallet_list_raw,
+                                   example_input=example_input)
+
+        warehouse_layout = WAREHOUSE_LAYOUT
         start_location, path, total_cost = a_star_search(pallet_list, warehouse_layout)
+
+        if path is None:
+            return render_template('index.html',
+                                   error_messages=["No valid route was found for those pallet locations."],
+                                   pallet_list=pallet_list_raw,
+                                   example_input=example_input)
 
         warehouse_svg_content = generate_warehouse_svg(warehouse_layout)
         path_svg_content = generate_path_svg(path, warehouse_layout)
@@ -150,9 +193,10 @@ def index():
                                start_location=formatted_start_location,
                                path=path,
                                total_cost=total_cost,
+                               pallet_count=len(path),
                                combined_svg=combined_svg)
 
-    return render_template('index.html')
+    return render_template('index.html', example_input=example_input)
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=True)

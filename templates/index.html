@@ -3,14 +3,330 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Warehouse Optimizer</title>
+    <title>Reach Truck Route Optimizer</title>
+    <style>
+        :root {
+            --ink: #17201b;
+            --muted: #5f6f66;
+            --line: #d7ded9;
+            --panel: #f7f9f7;
+            --accent: #f96302;
+            --accent-dark: #c74c00;
+            --good: #19764f;
+            --danger: #b42318;
+            --white: #ffffff;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            background: #edf1ee;
+            color: var(--ink);
+            font-family: Arial, Helvetica, sans-serif;
+            line-height: 1.5;
+        }
+
+        .shell {
+            min-height: 100vh;
+            display: grid;
+            grid-template-columns: minmax(280px, 0.85fr) minmax(360px, 1.15fr);
+        }
+
+        .intro {
+            padding: 48px;
+            background:
+                linear-gradient(rgba(23, 32, 27, 0.72), rgba(23, 32, 27, 0.72)),
+                repeating-linear-gradient(90deg, #26342d 0 1px, transparent 1px 72px),
+                repeating-linear-gradient(0deg, #26342d 0 1px, transparent 1px 48px),
+                #17201b;
+            color: var(--white);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            gap: 48px;
+        }
+
+        .eyebrow {
+            margin: 0 0 16px;
+            color: #f9b48a;
+            font-size: 0.78rem;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+        }
+
+        h1 {
+            margin: 0;
+            max-width: 680px;
+            font-size: clamp(2.2rem, 5vw, 4.8rem);
+            line-height: 0.95;
+            letter-spacing: 0;
+        }
+
+        .lede {
+            max-width: 560px;
+            margin: 24px 0 0;
+            color: #dde7df;
+            font-size: 1.05rem;
+        }
+
+        .rules {
+            display: grid;
+            gap: 16px;
+            max-width: 520px;
+        }
+
+        .rule {
+            display: grid;
+            grid-template-columns: 36px 1fr;
+            gap: 14px;
+            align-items: start;
+        }
+
+        .rule-number {
+            width: 36px;
+            height: 36px;
+            display: grid;
+            place-items: center;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: #ffcfb3;
+            font-weight: 700;
+        }
+
+        .rule strong {
+            display: block;
+            margin-bottom: 3px;
+        }
+
+        .rule span {
+            color: #cbd7cf;
+            font-size: 0.94rem;
+        }
+
+        .workspace {
+            padding: 48px;
+            display: flex;
+            align-items: center;
+        }
+
+        .form-wrap {
+            width: 100%;
+            max-width: 760px;
+            margin: 0 auto;
+        }
+
+        .section-label {
+            margin: 0 0 10px;
+            color: var(--muted);
+            font-size: 0.82rem;
+            font-weight: 700;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+        }
+
+        h2 {
+            margin: 0 0 12px;
+            font-size: clamp(1.8rem, 3vw, 2.8rem);
+            line-height: 1.05;
+            letter-spacing: 0;
+        }
+
+        .helper {
+            max-width: 620px;
+            margin: 0 0 24px;
+            color: var(--muted);
+        }
+
+        form {
+            display: grid;
+            gap: 16px;
+        }
+
+        label {
+            font-weight: 700;
+        }
+
+        textarea {
+            width: 100%;
+            min-height: 180px;
+            resize: vertical;
+            border: 1px solid var(--line);
+            background: var(--white);
+            color: var(--ink);
+            padding: 18px;
+            font: 1.05rem/1.5 ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+            outline: none;
+            transition: border-color 160ms ease, box-shadow 160ms ease;
+        }
+
+        textarea:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 4px rgba(249, 99, 2, 0.14);
+        }
+
+        .format {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            margin: 6px 0;
+        }
+
+        .format-item {
+            border-top: 2px solid var(--line);
+            padding-top: 10px;
+            color: var(--muted);
+            font-size: 0.94rem;
+        }
+
+        .format-item strong {
+            display: block;
+            color: var(--ink);
+        }
+
+        .actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            align-items: center;
+        }
+
+        button,
+        .secondary-action {
+            min-height: 48px;
+            border: 0;
+            padding: 0 18px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        button[type="submit"] {
+            background: var(--accent);
+            color: var(--white);
+        }
+
+        button[type="submit"]:hover {
+            background: var(--accent-dark);
+        }
+
+        .secondary-action {
+            border: 1px solid var(--line);
+            background: var(--white);
+            color: var(--ink);
+        }
+
+        .errors {
+            border-left: 4px solid var(--danger);
+            background: #fff4f2;
+            color: var(--danger);
+            padding: 14px 16px;
+        }
+
+        .errors p {
+            margin: 0 0 6px;
+            font-weight: 700;
+        }
+
+        .errors ul {
+            margin: 0;
+            padding-left: 20px;
+        }
+
+        code {
+            background: rgba(23, 32, 27, 0.08);
+            padding: 2px 5px;
+        }
+
+        @media (max-width: 860px) {
+            .shell {
+                grid-template-columns: 1fr;
+            }
+
+            .intro,
+            .workspace {
+                padding: 32px 22px;
+            }
+
+            .format {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
 </head>
 <body>
-    <h1>Warehouse Optimizer</h1>
-    <form method="POST">
-        <label for="pallet_list">Enter pallet list (format: aisle,bay separated by spaces):</label><br>
-        <textarea name="pallet_list" id="pallet_list" rows="5" cols="30" required></textarea><br>
-        <input type="submit" value="Optimize">
-    </form>
+    <main class="shell">
+        <section class="intro" aria-labelledby="page-title">
+            <div>
+                <p class="eyebrow">Reach truck routing</p>
+                <h1 id="page-title">Warehouse Route Optimizer</h1>
+                <p class="lede">
+                    Enter the overhead pallet locations from a drop list. The app chooses a starting point and route that accounts for travel time, side switches, built-in gates, and rolly gates.
+                </p>
+            </div>
+
+            <div class="rules" aria-label="How it works">
+                <div class="rule">
+                    <div class="rule-number">1</div>
+                    <div><strong>Add pallet locations</strong><span>Use aisle and bay pairs from the warehouse layout.</span></div>
+                </div>
+                <div class="rule">
+                    <div class="rule-number">2</div>
+                    <div><strong>Run the optimizer</strong><span>The A* search compares route options and gate setup costs.</span></div>
+                </div>
+                <div class="rule">
+                    <div class="rule-number">3</div>
+                    <div><strong>Follow the sequence</strong><span>The result shows the route, estimated minutes, and gate work for each stop.</span></div>
+                </div>
+            </div>
+        </section>
+
+        <section class="workspace" aria-labelledby="form-title">
+            <div class="form-wrap">
+                <p class="section-label">Input</p>
+                <h2 id="form-title">Paste the pallet drop list</h2>
+                <p class="helper">
+                    Type each location as <code>aisle,bay</code>. Separate locations with spaces or new lines. Endcaps use labels like <code>EC1</code> or <code>EC2</code>.
+                </p>
+
+                {% if error_messages %}
+                <div class="errors" role="alert">
+                    <p>Fix the pallet list:</p>
+                    <ul>
+                        {% for message in error_messages %}
+                        <li>{{ message }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                {% endif %}
+
+                <form method="POST">
+                    <label for="pallet_list">Pallet locations</label>
+                    <textarea name="pallet_list" id="pallet_list" placeholder="Example: {{ example_input }}" required>{{ pallet_list or '' }}</textarea>
+
+                    <div class="format" aria-label="Input format">
+                        <div class="format-item"><strong>Standard bay</strong><span><code>12,8</code></span></div>
+                        <div class="format-item"><strong>Endcap</strong><span><code>3,EC2</code></span></div>
+                        <div class="format-item"><strong>Multiple stops</strong><span><code>1,5 2,7 3,EC2</code></span></div>
+                    </div>
+
+                    <div class="actions">
+                        <button type="submit">Optimize route</button>
+                        <button class="secondary-action" type="button" id="fill-example">Use example</button>
+                    </div>
+                </form>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        const example = "{{ example_input }}";
+        const textarea = document.getElementById('pallet_list');
+        document.getElementById('fill-example').addEventListener('click', function() {
+            textarea.value = example;
+            textarea.focus();
+        });
+    </script>
 </body>
 </html>
